@@ -1,0 +1,16 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+a {
+  text-decoration: inherit;
+}
+
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+}
