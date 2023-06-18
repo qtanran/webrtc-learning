@@ -9,6 +9,10 @@ const routes = [
       {
         path: 'user-media',
         component: () => import('@/views/userMedia/index.vue')
+      },
+      {
+        path: 'video-recording',
+        component: () => import('@/views/videoRecording/index.vue')
       }
     ]
   }
