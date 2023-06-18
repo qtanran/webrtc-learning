@@ -11,6 +11,7 @@
   "dependencies": {
     "element-plus": "^2.3.6",
     "sass": "^1.63.4",
+    "socket.io-client": "^4.6.2",
     "vue": "^3.2.47",
     "vue-router": "^4.2.2"
   },

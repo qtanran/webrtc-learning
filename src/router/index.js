@@ -13,6 +13,10 @@ const routes = [
       {
         path: 'video-recording',
         component: () => import('@/views/videoRecording/index.vue')
+      },
+      {
+        path: 'chat-room',
+        component: () => import('@/views/chatRoom/index.vue')
       }
     ]
   }
