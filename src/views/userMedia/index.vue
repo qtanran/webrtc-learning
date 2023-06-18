@@ -13,8 +13,13 @@ const audioData = reactive({
   deviceId: ''
 })
 
+// video dom
 const player = ref(null)
+// 视频约束
+const videoConstraints = ref({})
 const getMediaStream = stream => {
+  const videoTrack = stream.getVideoTracks()[0]
+  videoConstraints.value = videoTrack.getSettings()
   player.value.srcObject = stream
 }
 
@@ -55,8 +60,18 @@ const getDevices = async () => {
 // 特效
 const specialEffects = ref('none')
 
+/**
+ * 截图
+ */
+const picture = ref('')
+const screenshot = () => {
+  picture.value
+    .getContext('2d')
+    .drawImage(player.value, 0, 0, picture.value.width, picture.value.height)
+}
+
 onMounted(async () => {
-  // await getUserMedia()
+  await getUserMedia()
   await getDevices()
   videoData.deviceId = devicesList.videoSource?.[0]?.deviceId
   audioData.deviceId = devicesList.audioSource?.[0]?.deviceId
@@ -66,6 +81,8 @@ onMounted(async () => {
 <template>
   <div>
     <video autoplay playsinline ref="player" :class="specialEffects"></video>
+    <canvas ref="picture" width="640" height="480"></canvas>
+    <pre>{{ videoConstraints }}</pre>
     <el-form label-width="80px">
       <el-form-item label="帧率">
         <el-input-number v-model="videoData.frameRate" :min="1" :max="60" />
@@ -99,6 +116,7 @@ onMounted(async () => {
       </el-form-item>
       <el-form-item>
         <el-button @click="getUserMedia">确定</el-button>
+        <el-button @click="screenshot">截图</el-button>
       </el-form-item>
     </el-form>
   </div>
