@@ -17,6 +17,10 @@ const routes = [
       {
         path: 'chat-room',
         component: () => import('@/views/chatRoom/index.vue')
+      },
+      {
+        path: 'local-interflow',
+        component: () => import('@/views/localInterflow/index.vue')
       }
     ]
   }
