@@ -21,6 +21,10 @@ const routes = [
       {
         path: 'local-interflow',
         component: () => import('@/views/localInterflow/index.vue')
+      },
+      {
+        path: 'live-streaming',
+        component: () => import('@/views/liveStreaming/index.vue')
       }
     ]
   }

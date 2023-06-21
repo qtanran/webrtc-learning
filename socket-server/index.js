@@ -26,8 +26,9 @@ io.on('connection', socket => {
     socket.join(room)
     console.log('用户加入房间', room, socket.id)
     // 获取我的房间
-    const myRoom = io.sockets.adapter.rooms[room]
-    const userNum = myRoom ? Object.keys(myRoom.sockets).length : 0
+    const myRoom = io.sockets.adapter.rooms.get(room)
+    const userNum = myRoom ? myRoom.size : 0
+    console.log('用户数', userNum)
     if (userNum < 3) {
       // 给自己发送 joined
       socket.emit('joined', room, socket.id)
@@ -35,7 +36,8 @@ io.on('connection', socket => {
         // 给房间里的其他用户发送 otherJoin
         socket.to(room).emit('otherJoin', room, socket.id)
       }
-    } else { // 如果房间人数大于等于3人
+    } else {
+      // 如果房间人数大于等于3人
       socket.leave(room)
       // 给自己发送 full
       socket.emit('full', room, socket.id)

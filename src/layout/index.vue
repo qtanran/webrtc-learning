@@ -12,6 +12,7 @@ const activeIndex = ref('user-media')
         <el-menu-item index="/video-recording">音视频录制</el-menu-item>
         <el-menu-item index="/chat-room">聊天室</el-menu-item>
         <el-menu-item index="/local-interflow">本机内音视频互通</el-menu-item>
+        <el-menu-item index="/live-streaming">直播</el-menu-item>
       </el-menu>
     </el-aside>
     <el-main>
