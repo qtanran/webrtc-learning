@@ -4,6 +4,7 @@ import { io } from 'socket.io-client'
 import { ElMessage } from 'element-plus'
 const localVideo = ref('')
 const remoteVideo = ref('')
+const isShareDesk = ref('false')
 const roomId = '111'
 
 let localStream = null
@@ -107,6 +108,10 @@ const getUserMedia = async () => {
       noiseSuppression: true,
       autoGainControl: true
     }
+  }
+  if (isShareDesk.value) {
+    constraints.video = false
+    await shareDesk()
   }
   return await navigator.mediaDevices.getUserMedia(constraints)
 }
@@ -212,9 +217,14 @@ const leave = () => {
   <div>
     <el-button :disabled="!leaveBtnDisabled" @click="connectServer">连接</el-button>
     <el-button :disabled="leaveBtnDisabled" @click="leave">离开</el-button>
+    <el-checkbox v-model="isShareDesk" size="large">共享桌面</el-checkbox>
   </div>
   <video ref="localVideo" autoplay playsinline muted></video>
   <video ref="remoteVideo" autoplay playsinline></video>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.el-checkbox {
+  margin-left: 20px;
+}
+</style>
