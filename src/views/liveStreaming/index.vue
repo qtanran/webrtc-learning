@@ -6,14 +6,13 @@ const localVideo = ref('')
 const remoteVideo = ref('')
 // 是否分享桌面
 const isShareDesk = ref(false)
-// 带宽
-const bandwidth = ref('unlimited')
 const roomId = '111'
 
 let localStream = null
 let remoteStream = null
 
 let pc = null
+let dc = null
 
 let state = 'init'
 // 按钮禁用
@@ -45,6 +44,7 @@ socket.on('otherJoin', async roomId => {
     bindTracks()
   }
   state = 'joined_conn'
+  createDataChannel()
   await call()
   console.log('其他用户加入房间', { roomId, state })
 })
@@ -151,6 +151,14 @@ const createPeerConnection = () => {
       })
     }
   }
+  pc.ondatachannel = e => {
+    if (!dc) {
+      dc = e.channel
+      dc.onmessage = receiveMsg
+      dc.onopen = dataChannelStateChange
+      dc.onclose = dataChannelStateChange
+    }
+  }
   pc.ontrack = e => {
     remoteStream = e.streams[0]
     remoteVideo.value.srcObject = e.streams[0]
@@ -215,6 +223,8 @@ const leave = () => {
   leaveBtnDisabled.value = true
 }
 
+// 带宽
+const bandwidth = ref('unlimited')
 /**
  * 带宽发生改变
  */
@@ -238,6 +248,41 @@ const handleBandwidthChange = () => {
     }
   })
 }
+
+// 聊天区域的文本
+const historyContent = ref('')
+// 要发送的文本
+const sendText = ref('')
+// 发送是否可用
+const sendDisabled = ref(false)
+/**
+ * 发送
+ */
+const send = () => {
+  if (!sendText.value) return
+  dc.send(sendText.value)
+  historyContent.value += '<-' + sendText.value + '\r\n'
+  sendText.value = ''
+}
+const createDataChannel = () => {
+  dc = pc.createDataChannel('chatchannel')
+  dc.onmessage = receiveMsg
+  dc.onopen = dataChannelStateChange
+  dc.onclose = dataChannelStateChange
+}
+const receiveMsg = e => {
+  if (e.data) {
+    historyContent.value += '->' + e.data + '\r\n'
+  }
+}
+const dataChannelStateChange = () => {
+  const readyState = dc.readyState
+  if (readyState === 'open') {
+    sendDisabled.value = false
+  } else {
+    sendDisabled.value = true
+  }
+}
 </script>
 
 <template>
@@ -255,12 +300,37 @@ const handleBandwidthChange = () => {
       <el-option label="125" value="125" />
     </el-select>
   </div>
-  <video ref="localVideo" autoplay playsinline muted></video>
-  <video ref="remoteVideo" autoplay playsinline></video>
+  <div>
+    <video ref="localVideo" autoplay playsinline muted></video>
+    <video ref="remoteVideo" autoplay playsinline></video>
+  </div>
+  <el-form>
+    <el-form-item>
+      <el-input type="textarea" :rows="10" readonly resize="none" v-model="historyContent" />
+    </el-form-item>
+    <el-form-item>
+      <el-input
+        type="textarea"
+        :rows="5"
+        resize="none"
+        v-model="sendText"
+        :disabled="sendDisabled"
+      />
+    </el-form-item>
+    <el-form-item>
+      <el-button @click="send" :disabled="sendDisabled">发送</el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
 <style scoped lang="scss">
 .el-checkbox {
   margin-left: 20px;
+}
+video {
+  width: 640px;
+  height: 480px;
+  background: #ccc;
+  margin-right: 20px;
 }
 </style>
